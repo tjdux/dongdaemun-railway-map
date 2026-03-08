@@ -8,7 +8,9 @@
       "Bash(node -e:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:observablehq.com)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:rail.blue)",
+      "WebFetch(domain:www.wikidata.org)"
     ]
   }
 }

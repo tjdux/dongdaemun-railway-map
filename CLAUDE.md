@@ -53,6 +53,7 @@ The application is contained in a single `src/App.jsx` file with the following s
 |------|-------|---------|
 | 1호선 | `#0052A4` | No |
 | 2호선(성수지선) | `#00A84D` | No |
+| 5호선 | `#996CAC` | No |
 | 우이신설선 | `#B7C452` | No |
 | 경의중앙선 | `#77C4A3` | No |
 | 경춘선 | `#0C8E72` | No |

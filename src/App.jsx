@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { toPng } from 'html-to-image';
+import { useState, useRef, useCallback, useEffect } from "react";
+import { toPng } from "html-to-image";
 
 // SVG 뷰박스 설정
 const SVG_WIDTH = 500;
@@ -11,47 +11,283 @@ const BOUNDS = {
   minLng: 127.02316787780416,
   maxLng: 127.07864451029816,
   minLat: 37.56004560739462,
-  maxLat: 37.60933156792092
+  maxLat: 37.60933156792092,
 };
 
 // 위경도 → SVG 좌표 변환
 const lngLatToSvg = (lng, lat) => {
-  const x = PADDING + ((lng - BOUNDS.minLng) / (BOUNDS.maxLng - BOUNDS.minLng)) * (SVG_WIDTH - 2 * PADDING);
-  const y = PADDING + ((BOUNDS.maxLat - lat) / (BOUNDS.maxLat - BOUNDS.minLat)) * (SVG_HEIGHT - 2 * PADDING);
+  const x =
+    PADDING +
+    ((lng - BOUNDS.minLng) / (BOUNDS.maxLng - BOUNDS.minLng)) *
+      (SVG_WIDTH - 2 * PADDING);
+  const y =
+    PADDING +
+    ((BOUNDS.maxLat - lat) / (BOUNDS.maxLat - BOUNDS.minLat)) *
+      (SVG_HEIGHT - 2 * PADDING);
   return { x, y };
 };
 
 // 역 데이터 (실제 위경도 좌표 - 서울교통공사 공식 데이터)
 const stationsData = [
   // 동대문구 내 역
-  { id: 'sinseoldong', name: '신설동', lng: 127.025087, lat: 37.575297, lines: ['1', '2_seongsu', 'ui'], isExternal: false },
-  { id: 'jegidong', name: '제기동', lng: 127.034893, lat: 37.578103, lines: ['1'], isExternal: false },
-  { id: 'cheongnyangni', name: '청량리', lng: 127.046835, lat: 37.580178, lines: ['1', 'gyeongui', 'gyeongchun', 'suin', 'ktx', 'gtxb', 'gtxc', 'myeonmok'], isExternal: false },
-  { id: 'hoegi', name: '회기', lng: 127.057583, lat: 37.58946, lines: ['1', 'gyeongui', 'gyeongchun'], isExternal: false },
-  { id: 'oedaeap', name: '외대앞', lng: 127.063549, lat: 37.596073, lines: ['1'], isExternal: false },
-  { id: 'sinimun', name: '신이문', lng: 127.067325, lat: 37.601854, lines: ['1'], isExternal: false },
-  { id: 'yongdu', name: '용두', lng: 127.038091, lat: 37.574028, lines: ['2_seongsu'], isExternal: false },
+  {
+    id: "sinseoldong",
+    name: "신설동",
+    lng: 127.025087,
+    lat: 37.575297,
+    lines: ["1", "2_seongsu", "ui"],
+    isExternal: false,
+  },
+  {
+    id: "jegidong",
+    name: "제기동",
+    lng: 127.034893,
+    lat: 37.578103,
+    lines: ["1"],
+    isExternal: false,
+  },
+  {
+    id: "cheongnyangni",
+    name: "청량리",
+    lng: 127.046835,
+    lat: 37.580178,
+    lines: [
+      "1",
+      "gyeongui",
+      "gyeongchun",
+      "suin",
+      "ktx",
+      "gtxb",
+      "gtxc",
+      "myeonmok",
+    ],
+    isExternal: false,
+  },
+  {
+    id: "hoegi",
+    name: "회기",
+    lng: 127.057583,
+    lat: 37.58946,
+    lines: ["1", "gyeongui", "gyeongchun"],
+    isExternal: false,
+  },
+  {
+    id: "oedaeap",
+    name: "외대앞",
+    lng: 127.063549,
+    lat: 37.596073,
+    lines: ["1"],
+    isExternal: false,
+  },
+  {
+    id: "sinimun",
+    name: "신이문",
+    lng: 127.067325,
+    lat: 37.601854,
+    lines: ["1"],
+    isExternal: false,
+  },
+  {
+    id: "yongdu",
+    name: "용두",
+    lng: 127.038091,
+    lat: 37.574028,
+    lines: ["2_seongsu"],
+    isExternal: false,
+  },
   // 동대문구 외 역 (노선 연결용)
-  { id: 'dongmyoap', name: '동묘앞', lng: 127.016429, lat: 37.572627, lines: ['1'], isExternal: true },
-  { id: 'seokgye', name: '석계', lng: 127.065851, lat: 37.614805, lines: ['1'], isExternal: true },
-  { id: 'sindap', name: '신답', lng: 127.04652, lat: 37.57001, lines: ['2_seongsu'], isExternal: true },
-  { id: 'yongdap', name: '용답', lng: 127.050899, lat: 37.561904, lines: ['2_seongsu'], isExternal: true },
-  { id: 'seongsu', name: '성수', lng: 127.055625, lat: 37.544622, lines: ['2_seongsu'], isExternal: true },
-  { id: 'jungrang', name: '중랑', lng: 127.076116, lat: 37.594917, lines: ['gyeongui', 'gyeongchun'], isExternal: true },
-  { id: 'wangsimni', name: '왕십리', lng: 127.037732, lat: 37.561533, lines: ['gyeongui', 'suin', 'gtxc'], isExternal: true },
-  { id: 'bomun', name: '보문', lng: 127.019827, lat: 37.584774, lines: ['ui'], isExternal: true },
-  { id: 'sangbong', name: '상봉', lng: 127.08559, lat: 37.59608, lines: ['ktx', 'gtxb'], isExternal: true },
-  { id: 'sinnae', name: '신내', lng: 127.1032, lat: 37.6129, lines: ['myeonmok'], isExternal: true },
-  { id: 'seoulstation', name: '서울역', lng: 126.972559, lat: 37.554648, lines: ['ktx', 'gtxb'], isExternal: true },
-  { id: 'samseong', name: '삼성', lng: 127.063238, lat: 37.508844, lines: ['gtxc'], isExternal: true },
-  { id: 'gwangundae', name: '광운대', lng: 127.061835, lat: 37.623632, lines: ['gtxc'], isExternal: true },
-  // 노선 연장용 가상 포인트 (지도 경계 밖, clipPath로 잘림)
-  { id: 'ext_jungrang', name: '', lng: 127.1317, lat: 37.6113, lines: ['gyeongui', 'gyeongchun'], isExternal: true },
-  { id: 'ext_wangsimni', name: '', lng: 127.0104, lat: 37.5056, lines: ['gyeongui'], isExternal: true },
+  {
+    id: "dongmyoap",
+    name: "동묘앞",
+    lng: 127.016429,
+    lat: 37.572627,
+    lines: ["1"],
+    isExternal: true,
+  },
+  {
+    id: "seokgye",
+    name: "석계",
+    lng: 127.065851,
+    lat: 37.614805,
+    lines: ["1"],
+    isExternal: true,
+  },
+  {
+    id: "sindap",
+    name: "신답",
+    lng: 127.04652,
+    lat: 37.57001,
+    lines: ["2_seongsu"],
+    isExternal: true,
+  },
+  {
+    id: "yongdap",
+    name: "용답",
+    lng: 127.050899,
+    lat: 37.561904,
+    lines: ["2_seongsu"],
+    isExternal: true,
+  },
+  {
+    id: "seongsu",
+    name: "성수",
+    lng: 127.052,
+    lat: 37.553,
+    lines: ["2_seongsu"],
+    isExternal: true,
+  },
+  {
+    id: "jungrang",
+    name: "중랑",
+    lng: 127.076116,
+    lat: 37.594917,
+    lines: ["gyeongui", "gyeongchun"],
+    isExternal: true,
+  },
+  {
+    id: "wangsimni",
+    name: "왕십리",
+    lng: 127.037732,
+    lat: 37.561533,
+    lines: ["gyeongui", "suin", "gtxc"],
+    isExternal: true,
+  },
+  {
+    id: "bomun",
+    name: "보문",
+    lng: 127.019827,
+    lat: 37.584774,
+    lines: ["ui"],
+    isExternal: true,
+  },
+  {
+    id: "sangbong",
+    name: "상봉",
+    lng: 127.08559,
+    lat: 37.59608,
+    lines: ["gyeongui", "ktx", "gtxb"],
+    isExternal: true,
+  },
+  {
+    id: "sinnae",
+    name: "신내",
+    lng: 127.085,
+    lat: 37.602,
+    lines: ["myeonmok"],
+    isExternal: true,
+  },
+  {
+    id: "seoulstation",
+    name: "서울역",
+    lng: 127.018,
+    lat: 37.569,
+    lines: ["ktx", "gtxb"],
+    isExternal: true,
+  },
+  {
+    id: "samseong",
+    name: "삼성",
+    lng: 127.045,
+    lat: 37.553,
+    lines: ["gtxc"],
+    isExternal: true,
+  },
+  {
+    id: "gwangundae",
+    name: "광운대",
+    lng: 127.064,
+    lat: 37.619,
+    lines: ["1", "gtxc"],
+    isExternal: true,
+  },
+  {
+    id: "janghanpyeong",
+    name: "장한평",
+    lng: 127.06364,
+    lat: 37.561619,
+    lines: ["5"],
+    isExternal: false,
+  },
+  {
+    id: "dapsimni5",
+    name: "답십리",
+    lng: 127.052546,
+    lat: 37.567008,
+    lines: ["5"],
+    showLabel: false,
+    isExternal: false,
+  },
+  // 5호선 답십리-장한평 구간 경유점 (동대문구 남쪽 외곽 경계를 따라)
+  {
+    id: "line5_wp1",
+    name: "",
+    lng: 127.056837,
+    lat: 37.563766,
+    lines: ["5"],
+    isExternal: true,
+  },
+  {
+    id: "line5_wp2",
+    name: "",
+    lng: 127.058203,
+    lat: 37.56272,
+    lines: ["5"],
+    isExternal: true,
+  },
+  {
+    id: "line5_wp3",
+    name: "",
+    lng: 127.059389,
+    lat: 37.562231,
+    lines: ["5"],
+    isExternal: true,
+  },
+  {
+    id: "line5_wp4",
+    name: "",
+    lng: 127.063307,
+    lat: 37.561484,
+    lines: ["5"],
+    isExternal: true,
+  },
+  // 5호선 양쪽 끝 짧은 연장
+  {
+    id: "ext_line5_west",
+    name: "",
+    lng: 127.049,
+    lat: 37.569,
+    lines: ["5"],
+    isExternal: true,
+  },
+  {
+    id: "ext_line5_east",
+    name: "",
+    lng: 127.066,
+    lat: 37.5615,
+    lines: ["5"],
+    isExternal: true,
+  },
+  // 노선 연장용 가상 포인트 (동대문구 경계 바로 밖)
+  {
+    id: "ext_jungrang",
+    name: "",
+    lng: 127.085,
+    lat: 37.598,
+    lines: ["gyeongchun"],
+    isExternal: true,
+  },
+  {
+    id: "ext_wangsimni",
+    name: "",
+    lng: 127.033,
+    lat: 37.553,
+    lines: ["gyeongui"],
+    isExternal: true,
+  },
 ];
 
 // 역 좌표를 SVG 좌표로 변환
-const stations = stationsData.map(s => {
+const stations = stationsData.map((s) => {
   const { x, y } = lngLatToSvg(s.lng, s.lat);
   return { ...s, x, y };
 });
@@ -59,98 +295,124 @@ const stations = stationsData.map(s => {
 // 노선 데이터 (동대문구 밖까지 연장)
 const lines = [
   {
-    id: '1',
-    name: '1호선',
-    color: '#0052A4',
-    stations: ['dongmyoap', 'sinseoldong', 'jegidong', 'cheongnyangni', 'hoegi', 'oedaeap', 'sinimun', 'seokgye'],
-    isPlanned: false
+    id: "1",
+    name: "1호선",
+    color: "#0052A4",
+    stations: [
+      "dongmyoap",
+      "sinseoldong",
+      "jegidong",
+      "cheongnyangni",
+      "hoegi",
+      "oedaeap",
+      "sinimun",
+      "gwangundae",
+      "seokgye",
+    ],
+    isPlanned: false,
   },
   {
-    id: '2_seongsu',
-    name: '2호선(성수지선)',
-    color: '#00A84D',
-    stations: ['sinseoldong', 'yongdu', 'sindap', 'yongdap', 'seongsu'],
-    isPlanned: false
+    id: "2_seongsu",
+    name: "2호선(성수지선)",
+    color: "#00A84D",
+    stations: ["sinseoldong", "yongdu", "sindap", "yongdap", "seongsu"],
+    isPlanned: false,
   },
   {
-    id: 'ui',
-    name: '우이신설선',
-    color: '#B7C452',
-    stations: ['sinseoldong', 'bomun'],
-    isPlanned: false
+    id: "5",
+    name: "5호선",
+    color: "#996CAC",
+    stations: ["ext_line5_west", "dapsimni5", "line5_wp1", "line5_wp2", "line5_wp3", "line5_wp4", "janghanpyeong", "ext_line5_east"],
+    isPlanned: false,
   },
   {
-    id: 'gyeongui',
-    name: '경의중앙선',
-    color: '#77C4A3',
-    stations: ['ext_wangsimni', 'wangsimni', 'cheongnyangni', 'hoegi', 'jungrang', 'ext_jungrang'],
-    isPlanned: false
+    id: "ui",
+    name: "우이신설선",
+    color: "#B7C452",
+    stations: ["sinseoldong", "bomun"],
+    isPlanned: false,
   },
   {
-    id: 'gyeongchun',
-    name: '경춘선',
-    color: '#0C8E72',
-    stations: ['cheongnyangni', 'hoegi', 'jungrang', 'ext_jungrang'],
-    isPlanned: false
+    id: "gyeongui",
+    name: "경의중앙선",
+    color: "#77C4A3",
+    stations: [
+      "ext_wangsimni",
+      "wangsimni",
+      "cheongnyangni",
+      "hoegi",
+      "jungrang",
+      "sangbong",
+    ],
+    isPlanned: false,
   },
   {
-    id: 'suin',
-    name: '수인분당선',
-    color: '#FABE00',
-    stations: ['wangsimni', 'cheongnyangni'],
-    isPlanned: false
+    id: "gyeongchun",
+    name: "경춘선",
+    color: "#0C8E72",
+    stations: ["cheongnyangni", "hoegi", "jungrang", "ext_jungrang"],
+    isPlanned: false,
   },
   {
-    id: 'ktx',
-    name: 'KTX',
-    color: '#E0004D',
-    stations: ['seoulstation', 'cheongnyangni', 'sangbong'],
-    isPlanned: false
+    id: "suin",
+    name: "수인분당선",
+    color: "#FABE00",
+    stations: ["wangsimni", "cheongnyangni"],
+    isPlanned: false,
   },
   {
-    id: 'gtxb',
-    name: 'GTX-B',
-    color: '#EA7E2F',
-    stations: ['seoulstation', 'cheongnyangni', 'sangbong'],
-    isPlanned: true
+    id: "ktx",
+    name: "KTX",
+    color: "#E0004D",
+    stations: ["seoulstation", "cheongnyangni", "sangbong"],
+    isPlanned: false,
   },
   {
-    id: 'gtxc',
-    name: 'GTX-C',
-    color: '#8B50A4',
-    stations: ['samseong', 'wangsimni', 'cheongnyangni', 'gwangundae'],
-    isPlanned: true
+    id: "gtxb",
+    name: "GTX-B",
+    color: "#EA7E2F",
+    stations: ["seoulstation", "cheongnyangni", "sangbong"],
+    isPlanned: true,
   },
   {
-    id: 'myeonmok',
-    name: '면목선',
-    color: '#D4A76A',
-    stations: ['cheongnyangni', 'sinnae'],
-    isPlanned: true
+    id: "gtxc",
+    name: "GTX-C",
+    color: "#8B50A4",
+    stations: ["samseong", "wangsimni", "cheongnyangni", "gwangundae"],
+    isPlanned: true,
+  },
+  {
+    id: "myeonmok",
+    name: "면목선",
+    color: "#D4A76A",
+    stations: ["cheongnyangni", "sinnae"],
+    isPlanned: true,
   },
 ];
 
 // GeoJSON 좌표를 SVG path 문자열로 변환
 const coordsToPath = (coordinates, geometryType) => {
   // MultiPolygon: coordinates[0][0], Polygon: coordinates[0]
-  const rings = geometryType === 'MultiPolygon' ? coordinates[0][0] : coordinates[0];
-  if (!rings || rings.length === 0) return '';
+  const rings =
+    geometryType === "MultiPolygon" ? coordinates[0][0] : coordinates[0];
+  if (!rings || rings.length === 0) return "";
 
-  const points = rings.map(coord => {
+  const points = rings.map((coord) => {
     const { x, y } = lngLatToSvg(coord[0], coord[1]);
     return `${x},${y}`;
   });
 
-  return `M ${points.join(' L ')} Z`;
+  return `M ${points.join(" L ")} Z`;
 };
 
 // 폴리곤 centroid 계산 (Shoelace formula 기반)
 const getPolygonCentroid = (coordinates, geometryType) => {
-  const rings = geometryType === 'MultiPolygon' ? coordinates[0][0] : coordinates[0];
+  const rings =
+    geometryType === "MultiPolygon" ? coordinates[0][0] : coordinates[0];
   if (!rings || rings.length === 0) return { x: 0, y: 0 };
 
   // SVG 좌표로 변환
-  const points = rings.map(coord => lngLatToSvg(coord[0], coord[1]));
+  const points = rings.map((coord) => lngLatToSvg(coord[0], coord[1]));
 
   let signedArea = 0;
   let cx = 0;
@@ -177,11 +439,11 @@ const getPolygonCentroid = (coordinates, geometryType) => {
 
 // 특정 동에 대한 라벨 위치 수동 조정
 const labelOffsets = {
-  '신설동': { x: 0, y: -10 },
-  '휘경2동': { x: 10, y: 5 },
-  '답십리1동': { x: -5, y: 5 },
-  '장안1동': { x: 5, y: 0 },
-  '용두동': { x: 0, y: 10 },
+  신설동: { x: 0, y: -10 },
+  휘경2동: { x: 10, y: 5 },
+  답십리1동: { x: -5, y: 5 },
+  장안1동: { x: 5, y: 0 },
+  용두동: { x: 0, y: 10 },
 };
 
 const getLabelPosition = (coordinates, geometryType, dongName) => {
@@ -189,45 +451,62 @@ const getLabelPosition = (coordinates, geometryType, dongName) => {
   const offset = labelOffsets[dongName] || { x: 0, y: 0 };
   return {
     x: center.x + offset.x,
-    y: center.y + offset.y
+    y: center.y + offset.y,
   };
 };
 
 // 행정동 이름 추출 (예: "서울특별시 동대문구 회기동" → "회기동")
 const extractDongName = (fullName) => {
-  const parts = fullName.split(' ');
+  const parts = fullName.split(" ");
   return parts[parts.length - 1];
 };
 
 // 겹치는 구간의 오프셋 계산
 const getLineOffset = (lineId, stationFrom, stationTo) => {
   // 청량리-회기 구간: 1호선, 경의중앙선, 경춘선
-  const cheongnyangniHoegiLines = ['1', 'gyeongui', 'gyeongchun'];
+  const cheongnyangniHoegiLines = ["1", "gyeongui", "gyeongchun"];
   if (
-    (stationFrom === 'cheongnyangni' && stationTo === 'hoegi') ||
-    (stationFrom === 'hoegi' && stationTo === 'cheongnyangni')
+    (stationFrom === "cheongnyangni" && stationTo === "hoegi") ||
+    (stationFrom === "hoegi" && stationTo === "cheongnyangni")
   ) {
     const index = cheongnyangniHoegiLines.indexOf(lineId);
     if (index !== -1) {
       return (index - 1) * 5;
     }
   }
-  // 회기-중랑-연장 구간: 경의중앙선, 경춘선
-  const hoegiJungrangLines = ['gyeongui', 'gyeongchun'];
-  const hoegiJungrangStations = ['hoegi', 'jungrang', 'ext_jungrang'];
+  // 회기-중랑 구간: 경의중앙선, 경춘선 (청량리-회기와 동일하게 나란히)
+  const hoegiJungrangLines = ["gyeongui", "gyeongchun"];
   if (
-    hoegiJungrangStations.includes(stationFrom) &&
-    hoegiJungrangStations.includes(stationTo) &&
-    stationFrom !== stationTo
+    (stationFrom === "hoegi" && stationTo === "jungrang") ||
+    (stationFrom === "jungrang" && stationTo === "hoegi")
   ) {
     const index = hoegiJungrangLines.indexOf(lineId);
     if (index !== -1) {
       return (index - 0.5) * 5;
     }
   }
+
+  // 서울역-청량리-상봉 구간: 경의중앙선, KTX, GTX-B
+  const cheongnyangniSangbongLines = ["gyeongui", "ktx", "gtxb"];
+  const cheongnyangniSangbongStations = ["seoulstation", "ext_wangsimni", "wangsimni", "cheongnyangni", "hoegi", "jungrang", "sangbong"];
+  if (
+    cheongnyangniSangbongStations.includes(stationFrom) &&
+    cheongnyangniSangbongStations.includes(stationTo) &&
+    stationFrom !== stationTo
+  ) {
+    const index = cheongnyangniSangbongLines.indexOf(lineId);
+    if (index !== -1) {
+      return (index - 1) * 5;
+    }
+  }
+
   // 왕십리-청량리 구간 (연장 포함): 경의중앙선, 수인분당선
-  const wangsimniCheongnyangniLines = ['gyeongui', 'suin'];
-  const wangsimniCheongnyangniStations = ['ext_wangsimni', 'wangsimni', 'cheongnyangni'];
+  const wangsimniCheongnyangniLines = ["gyeongui", "suin"];
+  const wangsimniCheongnyangniStations = [
+    "ext_wangsimni",
+    "wangsimni",
+    "cheongnyangni",
+  ];
   if (
     wangsimniCheongnyangniStations.includes(stationFrom) &&
     wangsimniCheongnyangniStations.includes(stationTo) &&
@@ -264,27 +543,27 @@ function App() {
   const [geoData, setGeoData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [visibleLines, setVisibleLines] = useState(
-    lines.reduce((acc, line) => ({ ...acc, [line.id]: true }), {})
+    lines.reduce((acc, line) => ({ ...acc, [line.id]: true }), {}),
   );
   const [showStationLabels, setShowStationLabels] = useState(true);
   const mapRef = useRef(null);
 
   // GeoJSON 데이터 로드
   useEffect(() => {
-    fetch('/dongdaemun.geojson')
-      .then(res => res.json())
-      .then(data => {
+    fetch("/dongdaemun.geojson")
+      .then((res) => res.json())
+      .then((data) => {
         setGeoData(data);
         setLoading(false);
       })
-      .catch(err => {
-        console.error('GeoJSON 로드 실패:', err);
+      .catch((err) => {
+        console.error("GeoJSON 로드 실패:", err);
         setLoading(false);
       });
   }, []);
 
   const toggleLine = (lineId) => {
-    setVisibleLines(prev => ({ ...prev, [lineId]: !prev[lineId] }));
+    setVisibleLines((prev) => ({ ...prev, [lineId]: !prev[lineId] }));
   };
 
   const handleExportPng = useCallback(() => {
@@ -292,17 +571,17 @@ function App() {
 
     toPng(mapRef.current, {
       cacheBust: true,
-      backgroundColor: '#2a2a2a',
-      pixelRatio: 2
+      backgroundColor: "#2a2a2a",
+      pixelRatio: 2,
     })
       .then((dataUrl) => {
-        const link = document.createElement('a');
-        link.download = 'dongdaemun-railway-map.png';
+        const link = document.createElement("a");
+        link.download = "dongdaemun-railway-map.png";
         link.href = dataUrl;
         link.click();
       })
       .catch((err) => {
-        console.error('PNG 저장 실패:', err);
+        console.error("PNG 저장 실패:", err);
       });
   }, [mapRef]);
 
@@ -323,60 +602,71 @@ function App() {
           동대문구 철도 노선 지도
         </h1>
 
-        <div
-          ref={mapRef}
-          className="bg-gray-800 rounded-lg p-4 mb-4"
-        >
+        <div ref={mapRef} className="bg-gray-800 rounded-lg p-4 mb-4">
           <svg
             viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
             className="w-full h-auto"
-            style={{ maxHeight: '600px' }}
+            style={{ maxHeight: "600px" }}
           >
-            {/* 클리핑 영역 정의 (지도 전체 영역) */}
+            {/* 클리핑 영역 정의 (동대문구 데이터 영역 + 약간의 여백) */}
             <defs>
               <clipPath id="mapClip">
-                <rect x="0" y="0" width={SVG_WIDTH} height={SVG_HEIGHT} />
+                <rect x={PADDING - 10} y={PADDING - 10} width={SVG_WIDTH - 2 * PADDING + 20} height={SVG_HEIGHT - 2 * PADDING + 20} />
               </clipPath>
             </defs>
 
             {/* 배경 */}
-            <rect x="0" y="0" width={SVG_WIDTH} height={SVG_HEIGHT} fill="#3a3a3a" />
+            <rect
+              x="0"
+              y="0"
+              width={SVG_WIDTH}
+              height={SVG_HEIGHT}
+              fill="#3a3a3a"
+            />
 
             {/* 행정동 폴리곤 */}
-            {geoData && geoData.features.map((feature, idx) => {
-              const geometryType = feature.geometry.type;
-              const path = coordsToPath(feature.geometry.coordinates, geometryType);
-              const dongName = extractDongName(feature.properties.adm_nm);
-              const labelPos = getLabelPosition(feature.geometry.coordinates, geometryType, dongName);
+            {geoData &&
+              geoData.features.map((feature, idx) => {
+                const geometryType = feature.geometry.type;
+                const path = coordsToPath(
+                  feature.geometry.coordinates,
+                  geometryType,
+                );
+                const dongName = extractDongName(feature.properties.adm_nm);
+                const labelPos = getLabelPosition(
+                  feature.geometry.coordinates,
+                  geometryType,
+                  dongName,
+                );
 
-              return (
-                <g key={idx}>
-                  {/* 행정동 영역 */}
-                  <path
-                    d={path}
-                    fill="#5a5a5a"
-                    stroke="#888"
-                    strokeWidth="1.5"
-                  />
-                  {/* 행정동 이름 */}
-                  <text
-                    x={labelPos.x}
-                    y={labelPos.y}
-                    fill="#bbb"
-                    fontSize="9"
-                    fontWeight="500"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                  >
-                    {dongName}
-                  </text>
-                </g>
-              );
-            })}
+                return (
+                  <g key={idx}>
+                    {/* 행정동 영역 */}
+                    <path
+                      d={path}
+                      fill="#5a5a5a"
+                      stroke="#888"
+                      strokeWidth="1.5"
+                    />
+                    {/* 행정동 이름 */}
+                    <text
+                      x={labelPos.x}
+                      y={labelPos.y}
+                      fill="#bbb"
+                      fontSize="9"
+                      fontWeight="500"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      {dongName}
+                    </text>
+                  </g>
+                );
+              })}
 
             {/* 노선 그리기 (클리핑 적용) */}
             <g clipPath="url(#mapClip)">
-              {lines.map(line => {
+              {lines.map((line) => {
                 if (!visibleLines[line.id]) return null;
                 if (line.isTerminal || line.stations.length < 2) return null;
 
@@ -385,11 +675,17 @@ function App() {
                   const toStation = stationMap[line.stations[idx + 1]];
                   if (!fromStation || !toStation) return null;
 
-                  const offset = getLineOffset(line.id, stationId, line.stations[idx + 1]);
+                  const offset = getLineOffset(
+                    line.id,
+                    stationId,
+                    line.stations[idx + 1],
+                  );
                   const { x1, y1, x2, y2 } = getOffsetPath(
-                    fromStation.x, fromStation.y,
-                    toStation.x, toStation.y,
-                    offset
+                    fromStation.x,
+                    fromStation.y,
+                    toStation.x,
+                    toStation.y,
+                    offset,
                   );
 
                   return (
@@ -410,62 +706,70 @@ function App() {
             </g>
 
             {/* 역 마커 (동대문구 내 역만 표시) */}
-            {stations.filter(s => !s.isExternal).map(station => {
-              const activeLines = lines.filter(
-                line => visibleLines[line.id] && line.stations.includes(station.id)
-              );
+            {stations
+              .filter((s) => !s.isExternal && s.lines.some((l) => visibleLines[l]))
+              .map((station) => {
+                const activeLines = lines.filter(
+                  (line) =>
+                    visibleLines[line.id] && line.stations.includes(station.id),
+                );
 
-              const isTransfer = station.lines.length > 1;
-              const radius = isTransfer ? 7 : 5;
+                const isTransfer = station.lines.length > 1;
+                const radius = isTransfer ? 7 : 5;
 
-              return (
-                <g key={station.id}>
-                  {isTransfer && (
+                return (
+                  <g key={station.id}>
+                    {isTransfer && (
+                      <circle
+                        cx={station.x}
+                        cy={station.y}
+                        r={radius + 2}
+                        fill="white"
+                        stroke="#333"
+                        strokeWidth="1"
+                      />
+                    )}
                     <circle
                       cx={station.x}
                       cy={station.y}
-                      r={radius + 2}
+                      r={radius}
                       fill="white"
-                      stroke="#333"
-                      strokeWidth="1"
+                      stroke={
+                        activeLines.length > 0 ? activeLines[0].color : "#666"
+                      }
+                      strokeWidth="2"
                     />
-                  )}
-                  <circle
-                    cx={station.x}
-                    cy={station.y}
-                    r={radius}
-                    fill="white"
-                    stroke={activeLines.length > 0 ? activeLines[0].color : '#666'}
-                    strokeWidth="2"
-                  />
-                  {showStationLabels && (
-                    <text
-                      x={station.x}
-                      y={station.y - radius - 5}
-                      fill="white"
-                      fontSize="10"
-                      fontWeight="bold"
-                      textAnchor="middle"
-                    >
-                      {station.name}
-                    </text>
-                  )}
-                </g>
-              );
-            })}
-
+                    {showStationLabels && station.showLabel !== false && (
+                      <text
+                        x={station.x}
+                        y={station.y - radius - 5}
+                        fill="white"
+                        fontSize="10"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                      >
+                        {station.name}
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
           </svg>
 
           {/* 범례 (Legend) - 지도 아래 */}
           {(() => {
-            const visibleLinesList = lines.filter(line => visibleLines[line.id]);
+            const visibleLinesList = lines.filter(
+              (line) => visibleLines[line.id],
+            );
             if (visibleLinesList.length === 0) return null;
 
             return (
               <div className="mt-3 pt-3 border-t border-gray-600">
-                <div className="text-xs text-gray-400 mb-2 font-semibold">범례</div>
+                <div className="text-xs text-gray-400 mb-2 font-semibold">
+                  범례
+                </div>
                 <div className="flex flex-wrap gap-x-4 gap-y-1">
-                  {visibleLinesList.map(line => (
+                  {visibleLinesList.map((line) => (
                     <div key={line.id} className="flex items-center gap-2">
                       <div
                         className="w-6 h-1 rounded"
@@ -486,24 +790,28 @@ function App() {
 
         {/* 노선 토글 버튼 */}
         <div className="bg-gray-800 rounded-lg p-4 mb-4">
-          <h2 className="text-sm font-semibold mb-3 text-gray-400">노선 필터</h2>
+          <h2 className="text-sm font-semibold mb-3 text-gray-400">
+            노선 필터
+          </h2>
           <div className="flex flex-wrap gap-2">
-            {lines.map(line => (
+            {lines.map((line) => (
               <button
                 key={line.id}
                 onClick={() => toggleLine(line.id)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                   visibleLines[line.id]
-                    ? 'text-white shadow-md'
-                    : 'text-gray-400 bg-gray-700'
+                    ? "text-white shadow-md"
+                    : "text-gray-400 bg-gray-700"
                 }`}
                 style={{
-                  backgroundColor: visibleLines[line.id] ? line.color : undefined,
+                  backgroundColor: visibleLines[line.id]
+                    ? line.color
+                    : undefined,
                   border: `2px solid ${line.color}`,
                 }}
               >
                 {line.name}
-                {line.isPlanned && ' (예정)'}
+                {line.isPlanned && " (예정)"}
               </button>
             ))}
           </div>
@@ -512,16 +820,18 @@ function App() {
         {/* 역 이름 토글 버튼 */}
         <div className="bg-gray-800 rounded-lg p-4 mb-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-400">역 이름 표시</h2>
+            <h2 className="text-sm font-semibold text-gray-400">
+              역 이름 표시
+            </h2>
             <button
-              onClick={() => setShowStationLabels(prev => !prev)}
+              onClick={() => setShowStationLabels((prev) => !prev)}
               className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 showStationLabels
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-700 text-gray-400'
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-700 text-gray-400"
               }`}
             >
-              {showStationLabels ? 'ON' : 'OFF'}
+              {showStationLabels ? "ON" : "OFF"}
             </button>
           </div>
         </div>
@@ -566,7 +876,13 @@ function App() {
               <span className="text-gray-300">운행 노선</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-1 rounded" style={{ background: 'repeating-linear-gradient(90deg, #EA7E2F, #EA7E2F 4px, transparent 4px, transparent 8px)' }}></div>
+              <div
+                className="w-8 h-1 rounded"
+                style={{
+                  background:
+                    "repeating-linear-gradient(90deg, #EA7E2F, #EA7E2F 4px, transparent 4px, transparent 8px)",
+                }}
+              ></div>
               <span className="text-gray-300">예정 노선</span>
             </div>
           </div>
