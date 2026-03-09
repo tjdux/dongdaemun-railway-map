@@ -284,6 +284,14 @@ const stationsData = [
     lines: ["gyeongui"],
     isExternal: true,
   },
+  {
+    id: "korea_univ",
+    name: "고려대",
+    lng: 127.03601,
+    lat: 37.59038,
+    lines: ["6"],
+    isExternal: false,
+  },
 ];
 
 // 역 좌표를 SVG 좌표로 변환
@@ -323,6 +331,13 @@ const lines = [
     name: "5호선",
     color: "#996CAC",
     stations: ["ext_line5_west", "dapsimni5", "line5_wp1", "line5_wp2", "line5_wp3", "line5_wp4", "janghanpyeong", "ext_line5_east"],
+    isPlanned: false,
+  },
+    {
+    id: "6",
+    name: "6호선",
+    color: "#CD7C2F",
+    stations: ["korea_univ"],
     isPlanned: false,
   },
   {
@@ -388,6 +403,7 @@ const lines = [
     stations: ["cheongnyangni", "sinnae"],
     isPlanned: true,
   },
+
 ];
 
 // GeoJSON 좌표를 SVG path 문자열로 변환
