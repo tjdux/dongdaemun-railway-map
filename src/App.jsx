@@ -41,9 +41,9 @@ const stationsData = [
   {
     id: "jegidong",
     name: "제기동",
-    lng: 127.034893,
+    lng: 127.0375,
     lat: 37.578103,
-    lines: ["1"],
+    lines: ["1", "dongbuk"],
     isExternal: false,
   },
   {
@@ -68,7 +68,7 @@ const stationsData = [
     name: "회기",
     lng: 127.057583,
     lat: 37.58946,
-    lines: ["1", "gyeongui", "gyeongchun"],
+    lines: ["1", "gyeongui", "gyeongchun", "ktx", "gtxc"],
     isExternal: false,
   },
   {
@@ -76,7 +76,8 @@ const stationsData = [
     name: "외대앞",
     lng: 127.063549,
     lat: 37.596073,
-    lines: ["1"],
+    lines: ["1", "gtxc"],
+    forceNormal: true,
     isExternal: false,
   },
   {
@@ -84,7 +85,8 @@ const stationsData = [
     name: "신이문",
     lng: 127.067325,
     lat: 37.601854,
-    lines: ["1"],
+    lines: ["1", "gtxc"],
+    forceNormal: true,
     isExternal: false,
   },
   {
@@ -110,6 +112,23 @@ const stationsData = [
     lng: 127.065851,
     lat: 37.614805,
     lines: ["1"],
+    isExternal: true,
+  },
+  // 경춘선 광운대지선 웨이포인트: 신이문 동쪽 우회
+  {
+    id: "gc_branch_wp1",
+    name: "",
+    lng: 127.068,
+    lat: 37.603,
+    lines: ["gyeongchun"],
+    isExternal: true,
+  },
+  {
+    id: "gc_branch_wp2",
+    name: "",
+    lng: 127.066,
+    lat: 37.613,
+    lines: ["gyeongchun"],
     isExternal: true,
   },
   {
@@ -141,15 +160,15 @@ const stationsData = [
     name: "중랑",
     lng: 127.076116,
     lat: 37.594917,
-    lines: ["gyeongui", "gyeongchun"],
+    lines: ["gyeongui", "gyeongchun", "ktx"],
     isExternal: true,
   },
   {
     id: "wangsimni",
     name: "왕십리",
-    lng: 127.037732,
+    lng: 127.032732,
     lat: 37.561533,
-    lines: ["gyeongui", "suin", "gtxc"],
+    lines: ["gyeongui", "suin", "gtxb"],
     isExternal: true,
   },
   {
@@ -165,14 +184,83 @@ const stationsData = [
     name: "상봉",
     lng: 127.08559,
     lat: 37.59608,
-    lines: ["gyeongui", "ktx", "gtxb"],
+    lines: ["gyeongui", "ktx", "gyeongchun"],
     isExternal: true,
   },
   {
     id: "sinnae",
     name: "신내",
     lng: 127.085,
-    lat: 37.602,
+    lat: 37.577,
+    lines: ["myeonmok"],
+    isExternal: true,
+  },
+  // GTX-B 웨이포인트: 청량리에서 경춘선 방향으로 가다 곡선으로 회기 아래 우회 후 오른쪽으로
+  {
+    id: "gtxb_bp1",
+    name: "",
+    lng: 127.052,
+    lat: 37.584,
+    lines: ["gtxb"],
+    isExternal: true,
+  },
+  {
+    id: "gtxb_bp2",
+    name: "",
+    lng: 127.057,
+    lat: 37.587,
+    lines: ["gtxb"],
+    isExternal: true,
+  },
+  {
+    id: "gtxb_bp3",
+    name: "",
+    lng: 127.063,
+    lat: 37.588,
+    lines: ["gtxb"],
+    isExternal: true,
+  },
+  {
+    id: "gtxb_exit",
+    name: "",
+    lng: 127.085,
+    lat: 37.593,
+    lines: ["gtxb"],
+    isExternal: true,
+  },
+  // 면목선 웨이포인트: 1호선과 전농1·2동 경계 연장선이 만나는 분기점
+  {
+    id: "myeonmok_wp1",
+    name: "",
+    lng: 127.053,
+    lat: 37.586,
+    lines: ["myeonmok"],
+    isExternal: true,
+  },
+  // 면목선 웨이포인트: 전농1동/전농2동 경계를 따라 내려가는 중간점
+  {
+    id: "myeonmok_wp2",
+    name: "",
+    lng: 127.057,
+    lat: 37.577,
+    lines: ["myeonmok"],
+    isExternal: true,
+  },
+  // 면목선 웨이포인트: 전농2동/답십리2동 경계 삼거리점 (세 동이 만나는 지점)
+  {
+    id: "myeonmok_wp3",
+    name: "",
+    lng: 127.05763,
+    lat: 37.57536,
+    lines: ["myeonmok"],
+    isExternal: true,
+  },
+  // 면목선 웨이포인트: 전농2동/답십리2동 경계를 따라 동쪽으로
+  {
+    id: "myeonmok_wp4",
+    name: "",
+    lng: 127.06438,
+    lat: 37.57644,
     lines: ["myeonmok"],
     isExternal: true,
   },
@@ -181,7 +269,16 @@ const stationsData = [
     name: "서울역",
     lng: 127.018,
     lat: 37.569,
-    lines: ["ktx", "gtxb"],
+    lines: ["gtxb"],
+    isExternal: true,
+  },
+  // KTX 남쪽 출구 웨이포인트: 청량리에서 수직 남하
+  {
+    id: "ktx_south_exit",
+    name: "",
+    lng: 127.028,
+    lat: 37.555,
+    lines: ["ktx"],
     isExternal: true,
   },
   {
@@ -192,12 +289,30 @@ const stationsData = [
     lines: ["gtxc"],
     isExternal: true,
   },
+  // GTX-C 웨이포인트: 광운대에서 청량리까지 수직 접근
+  {
+    id: "gtxc_wp1",
+    name: "",
+    lng: 127.048,
+    lat: 37.605,
+    lines: ["gtxc"],
+    isExternal: true,
+  },
+  // GTX-C 웨이포인트: 청량리 이후 수인분당선 방향 (서남쪽, 왕십리 방면)
+  {
+    id: "gtxc_exit",
+    name: "",
+    lng: 127.025,
+    lat: 37.550,
+    lines: ["gtxc"],
+    isExternal: true,
+  },
   {
     id: "gwangundae",
     name: "광운대",
     lng: 127.064,
     lat: 37.619,
-    lines: ["1", "gtxc"],
+    lines: ["1", "gtxc", "gyeongchun"],
     isExternal: true,
   },
   {
@@ -279,9 +394,9 @@ const stationsData = [
   {
     id: "ext_wangsimni",
     name: "",
-    lng: 127.033,
+    lng: 127.028,
     lat: 37.553,
-    lines: ["gyeongui"],
+    lines: ["gyeongui", "gtxb"],
     isExternal: true,
   },
   {
@@ -289,8 +404,43 @@ const stationsData = [
     name: "고려대",
     lng: 127.03601,
     lat: 37.59038,
-    lines: ["6"],
+    lines: ["6", "dongbuk"],
     isExternal: false,
+  },
+  // 동북선 웨이포인트: 북쪽 진입
+  {
+    id: "dongbuk_entry",
+    name: "",
+    lng: 127.036,
+    lat: 37.600,
+    lines: ["dongbuk"],
+    isExternal: true,
+  },
+  // 동북선 웨이포인트: 고려대 이후 곡선 꺾임
+  {
+    id: "dongbuk_wp1",
+    name: "",
+    lng: 127.037,
+    lat: 37.586,
+    lines: ["dongbuk"],
+    isExternal: true,
+  },
+  {
+    id: "dongbuk_wp2",
+    name: "",
+    lng: 127.038,
+    lat: 37.581,
+    lines: ["dongbuk"],
+    isExternal: true,
+  },
+  // 동북선 웨이포인트: 남쪽 출구
+  {
+    id: "dongbuk_exit",
+    name: "",
+    lng: 127.038,
+    lat: 37.565,
+    lines: ["dongbuk"],
+    isExternal: true,
   },
 ];
 
@@ -365,7 +515,10 @@ const lines = [
     id: "gyeongchun",
     name: "경춘선",
     color: "#0C8E72",
-    stations: ["cheongnyangni", "hoegi", "jungrang", "ext_jungrang"],
+    segments: [
+      ["cheongnyangni", "hoegi", "jungrang", "sangbong"],
+      ["sangbong", "gc_branch_wp1", "gc_branch_wp2", "gwangundae"],
+    ],
     isPlanned: false,
   },
   {
@@ -379,28 +532,35 @@ const lines = [
     id: "ktx",
     name: "KTX",
     color: "#E0004D",
-    stations: ["seoulstation", "cheongnyangni", "sangbong"],
+    stations: ["ktx_south_exit", "cheongnyangni", "hoegi", "jungrang", "sangbong"],
     isPlanned: false,
   },
   {
     id: "gtxb",
     name: "GTX-B",
     color: "#EA7E2F",
-    stations: ["seoulstation", "cheongnyangni", "sangbong"],
+    stations: ["ext_wangsimni", "wangsimni", "cheongnyangni", "gtxb_bp1", "gtxb_bp2", "gtxb_bp3", "gtxb_exit"],
     isPlanned: true,
   },
   {
     id: "gtxc",
     name: "GTX-C",
     color: "#8B50A4",
-    stations: ["samseong", "wangsimni", "cheongnyangni", "gwangundae"],
+    stations: ["gtxc_exit", "cheongnyangni", "hoegi", "oedaeap", "sinimun", "gwangundae"],
     isPlanned: true,
   },
   {
     id: "myeonmok",
     name: "면목선",
     color: "#D4A76A",
-    stations: ["cheongnyangni", "sinnae"],
+    stations: ["cheongnyangni", "myeonmok_wp1", "myeonmok_wp2", "myeonmok_wp3", "myeonmok_wp4", "sinnae"],
+    isPlanned: true,
+  },
+  {
+    id: "dongbuk",
+    name: "동북선",
+    color: "#E42313",
+    stations: ["dongbuk_entry", "korea_univ", "dongbuk_wp1", "dongbuk_wp2", "jegidong", "yongdu", "dongbuk_exit"],
     isPlanned: true,
   },
 
@@ -455,11 +615,13 @@ const getPolygonCentroid = (coordinates, geometryType) => {
 
 // 특정 동에 대한 라벨 위치 수동 조정
 const labelOffsets = {
-  신설동: { x: 0, y: -10 },
+  신설동: { x: 0, y: 15 },
   휘경2동: { x: 10, y: 5 },
   답십리1동: { x: -5, y: 5 },
   장안1동: { x: 5, y: 0 },
-  용두동: { x: 0, y: 10 },
+  용두동: { x: 27, y: -1 },
+  이문2동: {x: 20, y: -15},
+  휘경1동: {x: 0, y: -6}
 };
 
 const getLabelPosition = (coordinates, geometryType, dongName) => {
@@ -479,32 +641,49 @@ const extractDongName = (fullName) => {
 
 // 겹치는 구간의 오프셋 계산
 const getLineOffset = (lineId, stationFrom, stationTo) => {
-  // 청량리-회기 구간: 1호선, 경의중앙선, 경춘선
-  const cheongnyangniHoegiLines = ["1", "gyeongui", "gyeongchun"];
+  // 광운대-회기 구간 (1호선 경로): 1호선, GTX-C
+  const line1GtxcLines = ["1", "gtxc"];
+  const line1GtxcStations = ["gwangundae", "seokgye", "sinimun", "oedaeap", "hoegi"];
+  if (
+    line1GtxcStations.includes(stationFrom) &&
+    line1GtxcStations.includes(stationTo) &&
+    stationFrom !== stationTo
+  ) {
+    const index = line1GtxcLines.indexOf(lineId);
+    if (index !== -1) {
+      return (index - 0.5) * 4;
+    }
+  }
+
+  // 동묘앞-청량리 구간 (1호선 경로): 1호선만
+  // (KTX는 수인분당선 경로로 이동)
+
+  // 청량리-회기 구간: 1호선, 경의중앙선, 경춘선, KTX, GTX-C
+  const cheongnyangniHoegiLines = ["1", "gtxc", "gyeongui", "gyeongchun", "ktx"];
   if (
     (stationFrom === "cheongnyangni" && stationTo === "hoegi") ||
     (stationFrom === "hoegi" && stationTo === "cheongnyangni")
   ) {
     const index = cheongnyangniHoegiLines.indexOf(lineId);
     if (index !== -1) {
-      return (index - 1) * 5;
+      return (index - 2) * 4;
     }
   }
-  // 회기-중랑 구간: 경의중앙선, 경춘선 (청량리-회기와 동일하게 나란히)
-  const hoegiJungrangLines = ["gyeongui", "gyeongchun"];
+  // 회기-중랑 구간: 경의중앙선, 경춘선, KTX
+  const hoegiJungrangLines = ["gyeongui", "gyeongchun", "ktx"];
   if (
     (stationFrom === "hoegi" && stationTo === "jungrang") ||
     (stationFrom === "jungrang" && stationTo === "hoegi")
   ) {
     const index = hoegiJungrangLines.indexOf(lineId);
     if (index !== -1) {
-      return (index - 0.5) * 5;
+      return (index - 1) * 5;
     }
   }
 
-  // 서울역-청량리-상봉 구간: 경의중앙선, KTX, GTX-B
-  const cheongnyangniSangbongLines = ["gyeongui", "ktx", "gtxb"];
-  const cheongnyangniSangbongStations = ["seoulstation", "ext_wangsimni", "wangsimni", "cheongnyangni", "hoegi", "jungrang", "sangbong"];
+  // 중랑-상봉 구간: 경의중앙선, 경춘선, KTX
+  const cheongnyangniSangbongLines = ["gyeongui", "gyeongchun", "ktx"];
+  const cheongnyangniSangbongStations = ["jungrang", "sangbong"];
   if (
     cheongnyangniSangbongStations.includes(stationFrom) &&
     cheongnyangniSangbongStations.includes(stationTo) &&
@@ -516,21 +695,23 @@ const getLineOffset = (lineId, stationFrom, stationTo) => {
     }
   }
 
-  // 왕십리-청량리 구간 (연장 포함): 경의중앙선, 수인분당선
-  const wangsimniCheongnyangniLines = ["gyeongui", "suin"];
-  const wangsimniCheongnyangniStations = [
+  // 청량리 남쪽 구간: 경의중앙선, 수인분당선, GTX-B, KTX, GTX-C
+  const southboundLines = [ "suin", "gtxc", "gyeongui", "gtxb", "ktx", ];
+  const southboundStations = [
     "ext_wangsimni",
     "wangsimni",
     "cheongnyangni",
+    "ktx_south_exit",
+    "gtxc_exit",
   ];
   if (
-    wangsimniCheongnyangniStations.includes(stationFrom) &&
-    wangsimniCheongnyangniStations.includes(stationTo) &&
+    southboundStations.includes(stationFrom) &&
+    southboundStations.includes(stationTo) &&
     stationFrom !== stationTo
   ) {
-    const index = wangsimniCheongnyangniLines.indexOf(lineId);
+    const index = southboundLines.indexOf(lineId);
     if (index !== -1) {
-      return (index - 0.5) * 5;
+      return (index - 2) * 4;
     }
   }
   return 0;
@@ -622,7 +803,7 @@ function App() {
           <svg
             viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
             className="w-full h-auto"
-            style={{ maxHeight: "600px" }}
+            style={{ maxHeight: "850px" }}
           >
             {/* 클리핑 영역 정의 (동대문구 데이터 영역 + 약간의 여백) */}
             <defs>
@@ -684,53 +865,161 @@ function App() {
             <g clipPath="url(#mapClip)">
               {lines.map((line) => {
                 if (!visibleLines[line.id]) return null;
-                if (line.isTerminal || line.stations.length < 2) return null;
+                const allSegments = line.segments || [line.stations];
+                if (line.isTerminal || allSegments.every(s => s.length < 2)) return null;
 
-                return line.stations.slice(0, -1).map((stationId, idx) => {
-                  const fromStation = stationMap[stationId];
-                  const toStation = stationMap[line.stations[idx + 1]];
-                  if (!fromStation || !toStation) return null;
+                return allSegments.flatMap((segment, segIdx) =>
+                  segment.slice(0, -1).map((stationId, idx) => {
+                    const fromStation = stationMap[stationId];
+                    const toStation = stationMap[segment[idx + 1]];
+                    if (!fromStation || !toStation) return null;
 
-                  const offset = getLineOffset(
-                    line.id,
-                    stationId,
-                    line.stations[idx + 1],
-                  );
-                  const { x1, y1, x2, y2 } = getOffsetPath(
-                    fromStation.x,
-                    fromStation.y,
-                    toStation.x,
-                    toStation.y,
-                    offset,
-                  );
+                    const offset = getLineOffset(
+                      line.id,
+                      stationId,
+                      segment[idx + 1],
+                    );
+                    const { x1, y1, x2, y2 } = getOffsetPath(
+                      fromStation.x,
+                      fromStation.y,
+                      toStation.x,
+                      toStation.y,
+                      offset,
+                    );
 
-                  return (
-                    <line
-                      key={`${line.id}-${stationId}-${line.stations[idx + 1]}`}
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
-                      stroke={line.color}
-                      strokeWidth="4"
-                      strokeLinecap="round"
-                      strokeDasharray={line.isPlanned ? "8,4" : "none"}
-                    />
-                  );
-                });
+                    return (
+                      <line
+                        key={`${line.id}-seg${segIdx}-${stationId}-${segment[idx + 1]}`}
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        stroke={line.color}
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeDasharray={line.isPlanned ? "8,4" : "none"}
+                      />
+                    );
+                  })
+                );
               })}
             </g>
 
+            {/* 노선 이름 라벨 (각 노선 끝점) */}
+            {lines.map((line) => {
+              if (!visibleLines[line.id]) return null;
+              const allSegments = line.segments || [line.stations];
+              const labels = [];
+              // 노선별 라벨 위치 수동 보정
+              const labelAdjust = {
+                ui: { dx: 15, dy: 15 },
+                "1-seg0-end": { dx: -25, dy: 30 },
+                "gyeongui-seg0-start":{ dx: -15, dy: 0}, 
+                "gyeongui-seg0-end": { dx: 0, dy: -3 },
+                "gyeongchun-seg0-end": { dx: 0, dy: 0 },
+                "gtxc-seg0-start": {dx: -17, dy: -10},
+                "gtxb-seg0-start": {dx: 35, dy: -10},
+                "ktx-seg0-start": {dx: 45, dy: -20},
+                "ktx-seg0-end": { dx: 0, dy: 3 },
+                "suin-seg0-start": { dx: -22, dy: -25 },
+                
+              };
+              // 시작점에도 라벨을 붙일 노선
+              const showStartLabel = ["1", "suin", "dongbuk", "gyeongui", "gtxc", "gtxb", "ktx"];
+              const hideEndLabel = ["suin"];
+              // 라벨 표시 영역: 동대문구 경계(PADDING) + 20px
+              const labelMargin = PADDING - 20;
+              const labelRect = { x1: labelMargin, y1: labelMargin, x2: SVG_WIDTH - labelMargin, y2: SVG_HEIGHT - labelMargin };
+
+              // 선분과 사각형 경계의 교차점 계산
+              const clipToRect = (ax, ay, bx, by, rect) => {
+                let t = 1;
+                const dx = bx - ax;
+                const dy = by - ay;
+                // 각 경계면과의 교차 t값 계산
+                if (dx !== 0) {
+                  const tLeft = (rect.x1 - ax) / dx;
+                  const tRight = (rect.x2 - ax) / dx;
+                  if (dx > 0 && tRight < t && tRight > 0) t = tRight;
+                  if (dx < 0 && tLeft < t && tLeft > 0) t = tLeft;
+                }
+                if (dy !== 0) {
+                  const tTop = (rect.y1 - ay) / dy;
+                  const tBottom = (rect.y2 - ay) / dy;
+                  if (dy > 0 && tBottom < t && tBottom > 0) t = tBottom;
+                  if (dy < 0 && tTop < t && tTop > 0) t = tTop;
+                }
+                return { x: ax + dx * t, y: ay + dy * t };
+              };
+
+              const addLabel = (eId, aId, key) => {
+                const eStation = stationMap[eId];
+                const aStation = stationMap[aId];
+                if (!eStation || !aStation) return;
+
+                const offset = getLineOffset(line.id, aId, eId);
+                const { x1, y1, x2, y2 } = getOffsetPath(
+                  aStation.x, aStation.y,
+                  eStation.x, eStation.y,
+                  offset,
+                );
+
+                const isOutside = x2 < labelRect.x1 || x2 > labelRect.x2 || y2 < labelRect.y1 || y2 > labelRect.y2;
+                let lx, ly;
+                if (isOutside) {
+                  const clipped = clipToRect(x1, y1, x2, y2, labelRect);
+                  lx = clipped.x;
+                  ly = clipped.y;
+                } else {
+                  const dx = x2 - x1;
+                  const dy = y2 - y1;
+                  const len = Math.sqrt(dx * dx + dy * dy);
+                  lx = x2 + (len > 0 ? dx / len * 10 : 0);
+                  ly = y2 + (len > 0 ? dy / len * 10 : 0);
+                }
+
+                const adj = labelAdjust[key] || labelAdjust[line.id] || { dx: 0, dy: 0 };
+                labels.push(
+                  <text
+                    key={`label-${key}`}
+                    x={lx + adj.dx}
+                    y={ly + adj.dy}
+                    fill={line.color}
+                    fontSize="7"
+                    fontWeight="bold"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                  >
+                    {line.name}
+                  </text>
+                );
+              };
+
+              allSegments.forEach((segment, segIdx) => {
+                if (segment.length < 2) return;
+                // 끝점 라벨
+                if (!hideEndLabel.includes(line.id)) {
+                  addLabel(segment[segment.length - 1], segment[segment.length - 2], `${line.id}-seg${segIdx}-end`);
+                }
+                // 시작점 라벨 (지정된 노선만)
+                if (showStartLabel.includes(line.id)) {
+                  addLabel(segment[0], segment[1], `${line.id}-seg${segIdx}-start`);
+                }
+              });
+
+              return labels;
+            })}
+
             {/* 역 마커 (동대문구 내 역만 표시) */}
             {stations
-              .filter((s) => !s.isExternal && s.lines.some((l) => visibleLines[l]))
+              .filter((s) => !s.isExternal)
               .map((station) => {
                 const activeLines = lines.filter(
                   (line) =>
-                    visibleLines[line.id] && line.stations.includes(station.id),
+                    visibleLines[line.id] && (line.segments || [line.stations]).some(s => s.includes(station.id)),
                 );
 
-                const isTransfer = station.lines.length > 1;
+                const isTransfer = station.lines.length > 1 && !station.forceNormal;
                 const radius = isTransfer ? 7 : 5;
 
                 return (
@@ -758,7 +1047,7 @@ function App() {
                     {showStationLabels && station.showLabel !== false && (
                       <text
                         x={station.x}
-                        y={station.y - radius - 5}
+                        y={station.labelBelow ? station.y + radius + 13 : station.y - radius - 5}
                         fill="white"
                         fontSize="10"
                         fontWeight="bold"
